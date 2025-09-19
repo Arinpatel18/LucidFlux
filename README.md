@@ -435,7 +435,7 @@ For any questions or inquiries, please reach out to us:
 
   <br>
 
-  <img src="https://github.com/user-attachments/assets/047faa4e-da63-415c-97a0-8dbe8045a839"
+  <img src="https://github.com/user-attachments/assets/c708c1b5-4e33-44e4-87eb-c3c8f8dbbc8c"
        alt="WeChat Group QR"
        width="320">
 </details>
