@@ -317,7 +317,7 @@ python demo_gradio.py
     <td width="200"><b>LQ</b></td>
     <td width="200"><b>HYPIR</b></td>
     <td width="200"><b>Topaz</b></td>
-    <td width="200"><b>SeeDream 4.0</b></td>
+    <td width="200"><b>Seedream 4.0</b></td>
     <td width="200"><b>Gemini-NanoBanana</b></td>
     <td width="200"><b>GPT-4o</b></td>
     <td width="200"><b>Ours</b></td>
