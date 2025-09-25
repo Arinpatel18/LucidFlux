@@ -9,7 +9,7 @@
 </div>
 
 ---
-<img width="1420" height="1116" alt="abs_image" src="https://github.com/user-attachments/assets/791c0c60-29a6-4497-86a9-5716049afe9a" />
+<img alt="abs_image" src="images/framework/abs_image.png" />
 
 ---
 ## News & Updates
@@ -101,8 +101,12 @@ python demo_gradio.py
 
 ### 📈 Quantitative Results
 
-<table>
-<thead>
+<img alt="quantitative_comparison" src="images/framework/quantitative_comparison.png" />
+<img alt="quantitative_comparison_commercial" src="images/framework/quantitative_comparison_commercial.png" />
+
+
+<!-- <table> -->
+<!-- <thead>
   <tr>
     <th>Benchmark</th>
     <th>Metric</th>
@@ -259,7 +263,7 @@ python demo_gradio.py
     <td>3.6742</td>
   </tr>
 </tbody>
-</table>
+</table> -->
 
 
 
@@ -435,7 +439,7 @@ For any questions or inquiries, please reach out to us:
 
   <br>
 
-  <img src="https://github.com/user-attachments/assets/c708c1b5-4e33-44e4-87eb-c3c8f8dbbc8c"
+  <img src="images/framework/QR-code.jpg"
        alt="WeChat Group QR"
        width="320">
   ![371d72f2db6687fc50976d258a945cbc](https://github.com/user-attachments/assets/8d4e11eb-119c-4fe7-a901-d112b051eaba)
