@@ -36,7 +36,7 @@ Let us know if this works!
 <br>
 </div> -->
 
-LucidFlux is a framework designed to perform high-fidelity image restoration across a wide range of degradations without requiring textual captions. By combining a Flux-based DiT backbone with Light-weight Condition Module and SigLIP semantic alignment, LucidFlux enables caption-free guidance while preserving structural and semantic consistency, achieving superior restoration quality.
+LucidFlux is a caption-free universal image restoration framework that leverages a lightweight dual-branch conditioner and adaptive modulation to guide a large diffusion transformer (Flux.1) with minimal overhead, achieving robust, high-fidelity restoration without relying on text prompts or MLLM captions.
 
 <!-- ## 🚀 Quick Start
 
@@ -319,11 +319,11 @@ python demo_gradio.py
 <table>
 <tr align="center">
     <td width="200"><b>LQ</b></td>
-    <td width="200"><b>HYPIR</b></td>
+    <td width="200"><b>HYPIR-FLUX</b></td>
     <td width="200"><b>Topaz</b></td>
     <td width="200"><b>Seedream 4.0</b></td>
+    <td width="200"><b>MeiTu SR</b></td>
     <td width="200"><b>Gemini-NanoBanana</b></td>
-    <td width="200"><b>GPT-4o</b></td>
     <td width="200"><b>Ours</b></td>
 </tr>
 <tr align="center"><td colspan="7"><img src="images/commercial_comparison/commercial_061.jpg" width="1400"></td></tr>
@@ -357,14 +357,14 @@ python demo_gradio.py
 
 Our unified framework consists of **four critical components in the training workflow**:
 
-**🔤 Scaling Up Real-world High-Quality Data for Universal Image Restoration**
 
-**🎨 Two Parallel Light-weight Condition Module Branches for Low-Quality Image Conditioning**
+**🎨 Dual-Branch Conditioner for Low-Quality Image Conditioning**
 
 **🎯 Timestep and Layer-Adaptive Condition Injection**
 
 **🔄 Semantic Priors from Siglip for Caption-Free Semantic Alignment**
 
+**🔤 Scaling Up Real-world High-Quality Data for Universal Image Restoration**
 
 ## 🚀 Quick Start
 
