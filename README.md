@@ -368,6 +368,8 @@ Our unified framework consists of **four critical components in the training wor
 
 ## 🚀 Quick Start
 
+> ⚠️ The default setup requires roughly 48 GB of GPU VRAM. Use `inference_offload.py` or similar offloading strategies if your GPU has less memory, otherwise inference will fail.
+
 ### 🔧 Installation
 
 ```bash
@@ -376,11 +378,15 @@ git clone https://github.com/W2GenAI-Lab/LucidFlux.git
 cd LucidFlux
 
 # Create conda environment
-conda create -n lucidflux python=3.9
+conda create -n lucidflux python=3.11
 conda activate lucidflux
 
-# Install dependencies
+# Install PyTorch (CUDA 12.8 wheels)
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
+# Install remaining dependencies
 pip install -r requirements.txt
+pip install --upgrade timm
 
 ```
 
@@ -400,8 +406,10 @@ python -m tools.hf_login --token "$HF_TOKEN"
 # FLUX.1-dev (flow+ae), SwinIR prior, T5, CLIP, SigLIP and LucidFlux checkpoint to ./weights
 python -m tools.download_weights --dest weights
 
-# Exports FLUX_DEV_FLOW/FLUX_DEV_AE to your shell
+# Exports FLUX_DEV_FLOW/FLUX_DEV_AE to your shell (Linux/macOS)
 source weights/env.sh
+
+# Windows: open `weights\env.sh`, replace each leading `export` with `set`, then paste those commands into Command Prompt
 ```
 
 
