@@ -368,7 +368,7 @@ Our unified framework consists of **four critical components in the training wor
 
 ## 🚀 Quick Start
 
-> ⚠️ The default setup requires roughly 48 GB of GPU VRAM. Use `inference_offload.py` or similar offloading strategies if your GPU has less memory, otherwise inference will fail.
+> ⚠️ The default setup requires roughly 48 GB of GPU VRAM. 
 
 ### 🔧 Installation
 
@@ -418,6 +418,8 @@ Run inference (uses fixed relative paths):
 ```bash
 bash inference.sh
 ```
+
+> ℹ️ LucidFlux builds on Flux-based generative priors. Restored images can differ from the low-quality input because the model removes degradations and hallucinates realistic details by design. Visual discrepancies are expected and indicate the generative nature of the method.
 
 You can also obtain results of LucidFlux on RealSR and RealLQ250 from Hugging Face: [**LucidFlux**](https://huggingface.co/W2GenAI/LucidFlux).
 
