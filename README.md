@@ -457,7 +457,6 @@ For any questions or inquiries, please reach out to us:
   <img src="images/framework/QR-code.jpg"
        alt="WeChat Group QR"
        width="320">
-  ![371d72f2db6687fc50976d258a945cbc](https://github.com/user-attachments/assets/8d4e11eb-119c-4fe7-a901-d112b051eaba)
 
 </details>
 

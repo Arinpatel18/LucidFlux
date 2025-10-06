@@ -172,7 +172,7 @@ class Modulation(nn.Module):
 
     def forward(self, x, timestep, control_index):
         timesteps_proj = self.time_proj(timestep * 1000)
-        timesteps_emb = self.timestep_embedder(timesteps_proj)
+        timesteps_emb = self.timestep_embedder(timesteps_proj.to(x.dtype))
 
         if control_index.dim() == 0:
             control_index = control_index.repeat(x.shape[0])
@@ -290,6 +290,14 @@ def test_model_loading():
 
         # base models - 主干模型不offload
         model = load_flow_model(name, device=torch_device)
+        # 确保所有内部层都使用bfloat16
+        for param in model.parameters():
+            param.data = param.data.to(torch.bfloat16)
+        for module in model.modules():
+            if isinstance(module, nn.Linear):
+                module.weight.data = module.weight.data.to(torch.bfloat16)
+                if module.bias is not None:
+                    module.bias.data = module.bias.data.to(torch.bfloat16)
         ae = load_ae(name, device=torch_device)
         condition_lq = load_single_condition_branch(name, torch_device).to(torch.bfloat16)
 
