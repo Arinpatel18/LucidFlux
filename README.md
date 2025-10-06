@@ -3,7 +3,7 @@
 
 <!-- <img src="images/logo/logo2.png" alt="LucidFlux Logo" width="1200"/> -->
 
-### [**🌐 Website**](https://w2genai-lab.github.io/LucidFlux/) | [**📄 Technical Report**](Technical_Report.pdf) | [**🤗 Models**](https://huggingface.co/W2GenAI/LucidFlux) 
+### [**🌐 Website**](https://w2genai-lab.github.io/LucidFlux/) | [**📄 Technical Report**](Technical_Report.pdf) | [**🤗 Models**](https://huggingface.co/W2GenAI/LucidFlux) | [**🔧 Fal-AI Demo&API**](https://fal.ai/models/fal-ai/lucidflux/playground)
 <!-- | [**🤗 HF Demo**](https://github.com/W2GenAI-Lab/LucidFlux) -->
 <!-- [**🎯 Demo**](https://github.com/W2GenAI-Lab/LucidFlux)  -->
 </div>
