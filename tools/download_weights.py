@@ -16,6 +16,10 @@ T5_REPO = "XLabs-AI/xflux_text_encoders"
 CLIP_REPO = "openai/clip-vit-large-patch14"
 LUCIDFLUX_REPO = "W2GenAI/LucidFlux"
 LUCIDFLUX_FILE = "lucidflux.pth"
+PROMPT_EMBEDDINGS_FILE = "prompt_embeddings.pt"
+FLUX_FP8_REPO = "XLabs-AI/flux-dev-fp8"
+FLUX_FP8_FILE = "flux-dev-fp8.safetensors"
+QUANTIZATION_MAP_FILE = "flux_dev_quantization_map.json"
 SIGLIP_REPO = "google/siglip2-so400m-patch16-512"
 MODEL_KEY = "flux-dev"  # prefix for env vars
 
@@ -34,7 +38,7 @@ def ensure_dir(p: Path) -> None:
         p.mkdir(parents=True, exist_ok=True)
 
 
-def plan(dest_root: Path) -> Tuple[Path, Path, Path, Path, Path, Path, Path, Path, Path]:
+def plan(dest_root: Path) -> Tuple[Path, Path, Path, Path, Path, Path, Path, Path, Path, Path, Path]:
     model_dir = dest_root / MODEL_KEY
     flow_dst = model_dir / FLOW_FILE
     ae_dst = model_dir / AE_FILE
@@ -44,23 +48,27 @@ def plan(dest_root: Path) -> Tuple[Path, Path, Path, Path, Path, Path, Path, Pat
     t5_dir = dest_root / "t5"
     clip_dir = dest_root / "clip"
     lucidflux_dst = dest_root / "lucidflux" / "lucidflux.pth"
+    prompt_embeddings_dst = dest_root / "lucidflux" / "prompt_embeddings.pt"
+    flux_fp8_dst = model_dir / FLUX_FP8_FILE
+    quantization_map_dst = model_dir / QUANTIZATION_MAP_FILE
     siglip_dir = dest_root / "siglip"
-    return flow_dst, ae_dst, env_path, manifest_path, swinir_dst, t5_dir, clip_dir, lucidflux_dst, siglip_dir
+    return flow_dst, ae_dst, env_path, manifest_path, swinir_dst, t5_dir, clip_dir, lucidflux_dst, prompt_embeddings_dst, flux_fp8_dst, quantization_map_dst, siglip_dir
 
 
-def env_lines(flow_dst: Path, ae_dst: Path, t5_dir: Path, clip_dir: Path) -> Tuple[str, str, str, str]:
+def env_lines(flow_dst: Path, ae_dst: Path, t5_dir: Path, clip_dir: Path, flux_fp8_dst: Path) -> Tuple[str, str, str, str, str]:
     prefix = MODEL_KEY.replace('-', '_').upper()
     return (
         f"export {prefix}_FLOW={flow_dst}",
         f"export {prefix}_AE={ae_dst}",
         f"export T5_PATH={t5_dir}",
         f"export CLIP_PATH={clip_dir}",
+        f"export {prefix}_FLOW_FP8={flux_fp8_dst}",
     )
 
 
-def write_env(env_path: Path, flow_dst: Path, ae_dst: Path, t5_dir: Path, clip_dir: Path) -> None:
-    l1, l2, l3, l4 = env_lines(flow_dst, ae_dst, t5_dir, clip_dir)
-    content = "\n".join([l1, l2, l3, l4, "", f"# source {env_path}"]) + "\n"
+def write_env(env_path: Path, flow_dst: Path, ae_dst: Path, t5_dir: Path, clip_dir: Path, flux_fp8_dst: Path) -> None:
+    l1, l2, l3, l4, l5 = env_lines(flow_dst, ae_dst, t5_dir, clip_dir, flux_fp8_dst)
+    content = "\n".join([l1, l2, l3, l4, l5, "", f"# source {env_path}"]) + "\n"
     env_path.write_text(content)
 
 
@@ -73,10 +81,10 @@ def main() -> int:
     args = parse_args()
     dest_root = Path(args.dest).resolve()
 
-    flow_dst, ae_dst, env_path, manifest_path, swinir_dst, t5_dir, clip_dir, lucidflux_dst, siglip_dir = plan(dest_root)
+    flow_dst, ae_dst, env_path, manifest_path, swinir_dst, t5_dir, clip_dir, lucidflux_dst, prompt_embeddings_dst, flux_fp8_dst, quantization_map_dst, siglip_dir = plan(dest_root)
 
     if args.dry_run:
-        l1, l2, l3, l4 = env_lines(flow_dst, ae_dst, t5_dir, clip_dir)
+        l1, l2, l3, l4, l5 = env_lines(flow_dst, ae_dst, t5_dir, clip_dir, flux_fp8_dst)
         sys.stdout.write(
             "\n".join(
                 [
@@ -86,12 +94,16 @@ def main() -> int:
                     f"DRY RUN: snapshot T5   {T5_REPO} -> {t5_dir}",
                     f"DRY RUN: snapshot CLIP {CLIP_REPO} -> {clip_dir}",
                     f"DRY RUN: download LucidFlux {LUCIDFLUX_REPO}:{LUCIDFLUX_FILE} -> {lucidflux_dst}",
+                    f"DRY RUN: download Prompt Embeddings {LUCIDFLUX_REPO}:{PROMPT_EMBEDDINGS_FILE} -> {prompt_embeddings_dst}",
+                    f"DRY RUN: download FP8 Model {FLUX_FP8_REPO}:{FLUX_FP8_FILE} -> {flux_fp8_dst}",
+                    f"DRY RUN: download Quantization Map {FLUX_FP8_REPO}:{QUANTIZATION_MAP_FILE} -> {quantization_map_dst}",
                     f"DRY RUN: snapshot SIGLIP {SIGLIP_REPO} -> {siglip_dir}",
                     "DRY RUN: write env exports",
                     l1,
                     l2,
                     l3,
                     l4,
+                    l5,
                 ]
             )
             + "\n"
@@ -111,6 +123,9 @@ def main() -> int:
     snapshot_download(CLIP_REPO, local_dir=str(clip_dir), local_dir_use_symlinks=False)
     snapshot_download(SIGLIP_REPO, local_dir=str(siglip_dir), local_dir_use_symlinks=False)
     lucidflux_src = hf_hub_download(LUCIDFLUX_REPO, LUCIDFLUX_FILE)
+    prompt_embeddings_src = hf_hub_download(LUCIDFLUX_REPO, PROMPT_EMBEDDINGS_FILE)
+    flux_fp8_src = hf_hub_download(FLUX_FP8_REPO, FLUX_FP8_FILE)
+    quantization_map_src = hf_hub_download(FLUX_FP8_REPO, QUANTIZATION_MAP_FILE)
 
     if args.force or not flow_dst.exists():
         flow_dst.write_bytes(Path(flow_src).read_bytes())
@@ -120,11 +135,17 @@ def main() -> int:
         swinir_dst.write_bytes(Path(swinir_src).read_bytes())
     if args.force or not lucidflux_dst.exists():
         lucidflux_dst.write_bytes(Path(lucidflux_src).read_bytes())
+    if args.force or not prompt_embeddings_dst.exists():
+        prompt_embeddings_dst.write_bytes(Path(prompt_embeddings_src).read_bytes())
+    if args.force or not flux_fp8_dst.exists():
+        flux_fp8_dst.write_bytes(Path(flux_fp8_src).read_bytes())
+    if args.force or not quantization_map_dst.exists():
+        quantization_map_dst.write_bytes(Path(quantization_map_src).read_bytes())
 
-    write_env(env_path, flow_dst, ae_dst, t5_dir, clip_dir)
+    write_env(env_path, flow_dst, ae_dst, t5_dir, clip_dir, flux_fp8_dst)
     if args.print_env:
-        l1, l2, l3, l4 = env_lines(flow_dst, ae_dst, t5_dir, clip_dir)
-        sys.stdout.write("\n".join([l1, l2, l3, l4]) + "\n")
+        l1, l2, l3, l4, l5 = env_lines(flow_dst, ae_dst, t5_dir, clip_dir, flux_fp8_dst)
+        sys.stdout.write("\n".join([l1, l2, l3, l4, l5]) + "\n")
 
     write_manifest(
         manifest_path,
@@ -140,6 +161,10 @@ def main() -> int:
             "clip_repo": CLIP_REPO,
             "lucidflux_repo": LUCIDFLUX_REPO,
             "lucidflux_file": LUCIDFLUX_FILE,
+            "prompt_embeddings_file": PROMPT_EMBEDDINGS_FILE,
+            "flux_fp8_repo": FLUX_FP8_REPO,
+            "flux_fp8_file": FLUX_FP8_FILE,
+            "quantization_map_file": QUANTIZATION_MAP_FILE,
             "siglip_repo": SIGLIP_REPO,
         },
     )

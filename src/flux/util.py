@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 import torch
 import json
@@ -10,6 +11,7 @@ from huggingface_hub import hf_hub_download
 from safetensors import safe_open
 from safetensors.torch import load_file as load_sft
 
+from optimum.quanto import requantize
 
 from .model import Flux, FluxParams
 from .condition import SingleConditionBranch
@@ -152,11 +154,11 @@ configs = {
         ),
     ),
     "flux-dev-fp8": ModelSpec(
-        repo_id="XLabs-AI/flux-dev-fp8",
-        repo_id_ae="/hpc2hdd/home/sfei285/Project/flux-dev-trainer/FLUX.1-dev",
+        repo_id=os.getenv("FLUX_DEV_REPO", "black-forest-labs/FLUX.1-dev"),
+        repo_id_ae=os.getenv("FLUX_DEV_REPO", "black-forest-labs/FLUX.1-dev"),
         repo_flow="flux-dev-fp8.safetensors",
         repo_ae="ae.safetensors",
-        ckpt_path=os.getenv("FLUX_DEV_FP8"),
+        ckpt_path=os.getenv("FLUX_DEV_FLOW_FP8"),
         params=FluxParams(
             in_channels=64,
             vec_in_dim=768,
@@ -171,7 +173,7 @@ configs = {
             qkv_bias=True,
             guidance_embed=True,
         ),
-        ae_path=os.getenv("AE"),
+        ae_path=os.getenv("FLUX_DEV_AE"),
         ae_params=AutoEncoderParams(
             resolution=256,
             in_channels=3,
@@ -292,16 +294,17 @@ def load_flow_model_quintized(name: str, device: str, hf_download: bool = True):
         and hf_download
     ):
         ckpt_path = hf_hub_download(configs[name].repo_id, configs[name].repo_flow)
-    json_path = hf_hub_download(configs[name].repo_id, 'flux_dev_quantization_map.json')
 
+      # 获取quantization map路径
+    if configs[name].ckpt_path is None:
+        raise ValueError(f"Checkpoint path for {name} is None. Please set environment variable FLUX_DEV_FLOW_FP8")
+    json_path = os.path.join(os.path.dirname(configs[name].ckpt_path), 'flux_dev_quantization_map.json')
 
     model = Flux(configs[name].params).to(torch.bfloat16)
 
     print("Loading checkpoint")
     # load_sft doesn't support torch.device
     sd = load_sft(ckpt_path, device='cpu')
-    # Import here to avoid heavy quanto/transformers side effects at module import time
-    from optimum.quanto import requantize
     with open(json_path, "r") as f:
         quantization_map = json.load(f)
     print("Start a quantization process...")

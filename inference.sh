@@ -7,10 +7,10 @@ set -e
 python inference.py \
   --checkpoint weights/lucidflux/lucidflux.pth \
   --control_image assets/3.png \
-  --prompt "restore this image into high-quality, clean, high-resolution result" \
   --output_dir outputs \
   --width 1024 \
   --height 1024 \
   --num_steps 20 \
   --swinir_pretrained weights/swinir.pth \
-  --siglip_ckpt weights/siglip
+  --siglip_ckpt weights/siglip \
+  --offload

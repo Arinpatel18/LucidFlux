@@ -3,7 +3,7 @@ import torch
 import argparse
 import numpy as np
 from PIL import Image
-from einops import rearrange
+from einops import rearrange, repeat
 
 from src.flux.sampling import denoise_lucidflux, get_noise, get_schedule, prepare, unpack
 from src.flux.util import (load_ae, load_clip, load_t5,
@@ -19,6 +19,32 @@ from huggingface_hub import hf_hub_download
 from src.flux.flux_prior_redux_ir import siglip_from_unit_tensor
 from typing import Optional
 import math
+
+def prepare_with_embeddings(img, precomputed_txt, precomputed_vec):
+    """
+    使用预计算embeddings的prepare函数
+    """
+    bs, _, h, w = img.shape
+
+    img = rearrange(img, "b c (h ph) (w pw) -> b (h w) (c ph pw)", ph=2, pw=2)
+
+    img_ids = torch.zeros(h // 2, w // 2, 3, device=img.device, dtype=img.dtype)
+    img_ids[..., 1] = img_ids[..., 1] + torch.arange(h // 2, device=img.device)[:, None]
+    img_ids[..., 2] = img_ids[..., 2] + torch.arange(w // 2, device=img.device)[None, :]
+    img_ids = repeat(img_ids, "h w c -> b (h w) c", b=bs)
+
+    # 直接使用预计算的embeddings
+    txt = precomputed_txt
+    vec = precomputed_vec
+    txt_ids = torch.zeros(bs, txt.shape[1], 3, device=img.device, dtype=img.dtype)
+
+    return {
+        "img": img,
+        "img_ids": img_ids,
+        "txt": txt,
+        "txt_ids": txt_ids,
+        "vec": vec,
+    }
 
 def get_timestep_embedding(
     timesteps: torch.Tensor,
@@ -261,10 +287,6 @@ def create_argparser():
         help="Path to the input image or a directory of images for control"
     )
     parser.add_argument(
-        "--prompt", type=str, required=True,
-        help="The input text prompt"
-    )
-    parser.add_argument(
         "--device", type=str, default="cuda",
         help="Device to use (e.g. cpu, cuda:0, cuda:1, etc.)"
     )
@@ -326,15 +348,22 @@ def main(args):
     if not os.path.isdir(args.output_dir):
         os.makedirs(args.output_dir)
 
+    # 使用预计算的embeddings
+    embeddings_path = "weights/lucidflux/prompt_embeddings.pt"
+    print(f"Loading precomputed embeddings from {embeddings_path}")
+    embeddings_data = torch.load(embeddings_path, map_location='cpu')
+    precomputed_txt = embeddings_data['txt'].to(torch_device)
+    precomputed_vec = embeddings_data['vec'].to(torch_device)
+    original_prompt = embeddings_data.get('prompt', 'Unknown prompt')
+    print(f"Loaded embeddings for prompt: '{original_prompt}'")
+    print(f"txt shape: {precomputed_txt.shape}, vec shape: {precomputed_vec.shape}")
+
     # base models
-    model, ae, t5, clip, condition_lq = (
-        load_flow_model(name, device="cpu" if offload else torch_device),
+    model, ae, condition_lq = (
+        load_flow_model(name, device=torch_device),
         load_ae(name, device="cpu" if offload else torch_device),
-        load_t5(torch_device, max_length=256 if is_schnell else 512),
-        load_clip(torch_device),
-        load_single_condition_branch(name, torch_device).to(torch.bfloat16),
+        load_single_condition_branch(name, "cpu" if offload else torch_device).to(torch.bfloat16),
     )
-    model = model.to(torch_device)
 
 
     # load model checkpoint
@@ -346,7 +375,7 @@ def main(args):
     condition_lq.load_state_dict(checkpoint["condition_lq"], strict=False)
     condition_lq = condition_lq.to(torch_device)
 
-    condition_ldr = load_single_condition_branch(name, torch_device).to(torch.bfloat16)
+    condition_ldr = load_single_condition_branch(name, "cpu" if offload else torch_device).to(torch.bfloat16)
     condition_ldr.load_state_dict(checkpoint["condition_ldr"], strict=False)
 
     modulation_lq = Modulation(dim=3072).to(torch.bfloat16)
@@ -360,7 +389,7 @@ def main(args):
             condition_ldr,
             modulation_lq=modulation_lq,
             modulation_ldr=modulation_ldr,
-        ).to(torch_device)
+        ).to("cpu" if offload else torch_device)
 
     # SwinIR prior (frozen)
     if args.swinir_pretrained is None:
@@ -388,14 +417,14 @@ def main(args):
     swinir.eval()
     for p in swinir.parameters():
         p.requires_grad_(False)
-    swinir = swinir.to(torch_device)
+    swinir = swinir.to("cpu" if offload else torch_device)
 
     # SigLIP + Redux encoders (frozen for inference)
     dtype = torch.bfloat16 if torch_device.type == 'cuda' else torch.float32
     siglip_model = SiglipVisionModel.from_pretrained(args.siglip_ckpt)
     siglip_model.eval()
-    siglip_model.to(torch_device).to(dtype=dtype)
-    redux_image_encoder = load_redux_image_encoder(torch_device, dtype, checkpoint["connector"])
+    siglip_model.to("cpu" if offload else torch_device).to(dtype=dtype)
+    redux_image_encoder = load_redux_image_encoder("cpu" if offload else torch_device, dtype, checkpoint["connector"])
 
     width = 16 * args.width // 16
     height = 16 * args.height // 16
@@ -435,9 +464,13 @@ def main(args):
         condition_cond_ldr = None
 
         with torch.no_grad():
-            # SwinIR prior
+            # SwinIR prior - 确保输入在正确的设备上
             ci_01 = torch.clamp((condition_cond.float() + 1.0) / 2.0, 0.0, 1.0)
-            ci_pre = swinir(ci_01).float().clamp(0.0, 1.0)
+            if offload:
+                swinir.to(torch_device)
+            ci_pre = swinir(ci_01.to(torch_device)).float().clamp(0.0, 1.0)
+            if offload:
+                swinir.to("cpu")
             # save_image(ci_pre, os.path.join(args.output_dir, f"{filename}_swinir_pre.jpeg"))
             condition_cond_ldr = (ci_pre * 2.0 - 1.0).to(torch.bfloat16)
 
@@ -447,20 +480,31 @@ def main(args):
                 1, height, width, device=torch_device,
                 dtype=torch.bfloat16, seed=args.seed
             )
-            if offload:
-                t5, clip = t5.to(torch_device), clip.to(torch_device)
-            inp_cond = prepare(t5=t5, clip=clip, img=x, prompt=args.prompt)
+            # 使用预计算的embeddings
+            inp_cond = prepare_with_embeddings(
+                img=x, precomputed_txt=precomputed_txt, precomputed_vec=precomputed_vec
+            )
 
             # SigLIP feature -> Redux image embeds
             # Match preprocessing size to SigLIP config to avoid positional embedding mismatch
             siglip_size = getattr(getattr(siglip_model, "config", None), "image_size", 512)
             siglip_pixel_values_pre = siglip_from_unit_tensor(ci_pre, size=(siglip_size, siglip_size))
             inputs = {"pixel_values": siglip_pixel_values_pre.to(device=torch_device, dtype=dtype)}
+            if offload:
+                siglip_model.to(torch_device)
             siglip_image_pre_fts = siglip_model(**inputs).last_hidden_state.to(dtype=dtype)
+            if offload:
+                siglip_model.to("cpu")
+                torch.cuda.empty_cache()
             enc_dtype = redux_image_encoder.redux_up.weight.dtype
+            if offload:
+                redux_image_encoder.to(torch_device)
             image_embeds = redux_image_encoder(
                 siglip_image_pre_fts.to(device=torch_device, dtype=enc_dtype)
             )["image_embeds"]
+            if offload:
+                redux_image_encoder.to("cpu")
+                torch.cuda.empty_cache()
 
             # concat to txt and extend txt_ids
             txt = inp_cond["txt"].to(device=torch_device, dtype=torch.bfloat16)
@@ -470,11 +514,10 @@ def main(args):
             extra_ids = torch.zeros((B, 1024, C), device=txt_ids.device, dtype=torch.bfloat16)
             siglip_txt_ids = torch.cat([txt_ids, extra_ids], dim=1).to(dtype=torch.bfloat16)
 
-            # offload TEs
+            # offload model (except main flow model)
             if offload:
-                t5, clip = t5.cpu(), clip.cpu()
+                dual_condition_branch.to(torch_device)
                 torch.cuda.empty_cache()
-                model = model.to(torch_device)
 
             x = denoise_lucidflux(
                 model,

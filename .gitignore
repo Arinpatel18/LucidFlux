@@ -15,6 +15,13 @@ results-reallq250/
 cat_image.py
 run_cc.sh
 CLAUDE.md
+outputs/
+hfd.sh
+demo.py
+demo.sh
+inference_fp8.sh
+inference_fp8.py
+down_single.sh
 
 # Python cache files
 __pycache__/
