@@ -12,7 +12,16 @@
 <img alt="abs_image" src="images/framework/abs_image.png" />
 
 ---
-## News & Updates
+## 📰 News & Updates  
+
+**[2025.10]**  
+LucidFlux now supports **offload** and **precomputed prompt embeddings**, eliminating the need to load T5 or CLIP during inference.  
+These improvements reduce memory usage significantly — inference can now run with **as little as 28 GB VRAM**, greatly enhancing deployment efficiency.  
+
+**[2025.10]**  
+LucidFlux has been officially added to the **Fal AI Playground**!  
+You can now try the **online demo** and access the **Fal API** directly here:  
+👉 [**LucidFlux on Fal AI**](https://fal.ai/models/fal-ai/lucidflux/playground)  
 
 ---
 
