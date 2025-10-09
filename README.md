@@ -430,6 +430,22 @@ bash inference.sh
 
 You can also obtain results of LucidFlux on RealSR and RealLQ250 from Hugging Face: [**LucidFlux**](https://huggingface.co/W2GenAI/LucidFlux).
 
+---
+
+## 📝 Citation
+
+If you find LucidFlux useful for your research, please cite our report:
+
+```bibtex
+@article{fei2025lucidflux,
+  title={LucidFlux: Caption-Free Universal Image Restoration via a Large-Scale Diffusion Transformer},
+  author={Fei, Song and Ye, Tian and Wang, Lujia and Zhu, Lei},
+  journal={arXiv preprint arXiv:2509.22414},
+  year={2025}
+}
+```
+---
+
 ## 🪪 License
 
 The provided code and pre-trained weights are licensed under the [FLUX.1 \[dev\]](LICENSE).
