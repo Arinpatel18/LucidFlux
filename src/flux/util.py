@@ -11,8 +11,6 @@ from huggingface_hub import hf_hub_download
 from safetensors import safe_open
 from safetensors.torch import load_file as load_sft
 
-from optimum.quanto import requantize
-
 from .model import Flux, FluxParams
 from .condition import SingleConditionBranch
 from .modules.autoencoder import AutoEncoder, AutoEncoderParams
@@ -281,35 +279,6 @@ def load_flow_model2(name: str, device: str, hf_download: bool = True):
         sd = load_sft(ckpt_path, device=str(device))
         missing, unexpected = model.load_state_dict(sd, strict=False, assign=True)
         print_load_warning(missing, unexpected)
-    return model
-
-def load_flow_model_quintized(name: str, device: str, hf_download: bool = True):
-    # Loading Flux
-    print("Init model")
-    ckpt_path = configs[name].ckpt_path
-    if (
-        ckpt_path is None
-        and configs[name].repo_id is not None
-        and configs[name].repo_flow is not None
-        and hf_download
-    ):
-        ckpt_path = hf_hub_download(configs[name].repo_id, configs[name].repo_flow)
-
-      # 获取quantization map路径
-    if configs[name].ckpt_path is None:
-        raise ValueError(f"Checkpoint path for {name} is None. Please set environment variable FLUX_DEV_FLOW_FP8")
-    json_path = os.path.join(os.path.dirname(configs[name].ckpt_path), 'flux_dev_quantization_map.json')
-
-    model = Flux(configs[name].params).to(torch.bfloat16)
-
-    print("Loading checkpoint")
-    # load_sft doesn't support torch.device
-    sd = load_sft(ckpt_path, device='cpu')
-    with open(json_path, "r") as f:
-        quantization_map = json.load(f)
-    print("Start a quantization process...")
-    requantize(model, sd, quantization_map, device=device)
-    print("Model is quantized!")
     return model
 
 def load_single_condition_branch(name, device, transformer=None):

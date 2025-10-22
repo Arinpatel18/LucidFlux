@@ -4,6 +4,8 @@ set -e
 # Minimal, readable, zero-logic wrapper. All paths are relative.
 # Ensure you've prepared weights beforehand (e.g., source weights/env.sh for FLUX base).
 
+source weights/env.sh
+
 python inference.py \
   --checkpoint weights/lucidflux/lucidflux.pth \
   --control_image assets/3.png \
