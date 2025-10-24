@@ -375,7 +375,7 @@ Our unified framework consists of **four critical components in the training wor
 
 ## 🚀 Quick Start
 
-> ⚠️ The default setup requires roughly 48 GB of GPU VRAM. 
+> ⚠️ The default setup requires roughly 28 GB of GPU VRAM. 
 
 ### 🔧 Installation
 
