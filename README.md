@@ -432,6 +432,18 @@ You can also obtain results of LucidFlux on RealSR and RealLQ250 from Hugging Fa
 
 ---
 
+## 🚀 Updates
+For the purpose of fostering research and the open-source community, we plan to open-source the entire project, encompassing training, inference, weights, etc. Thank you for your patience and support! 🌟
+- [x] Release github repo.
+- [x] Release inference code.
+- [x] Release model checkpoints.
+- [x] Release arXiv paper.
+- [ ] Release training code.
+- [ ] Release the data filtering pipeline.
+
+
+
+
 ## 📝 Citation
 
 If you find LucidFlux useful for your research, please cite our report:
