@@ -1,5 +1,5 @@
 <div align="center">
-<h1>🎨 LucidFlux:<br/>Caption-Free Universal Image Restoration with a Large-Scale Diffusion Transformer</h1>
+<h1>🎨 LucidFlux:<br/>Caption-Free Photo-Realistic Image Restoration via a Large-Scale Diffusion Transformer</h1>
 
 <!-- <img src="images/logo/logo2.png" alt="LucidFlux Logo" width="1200"/> -->
 
@@ -13,6 +13,8 @@
 
 ---
 ## 📰 News & Updates  
+
+**[2025.02.06]** - LucidFlux is accepted by **ICLR'26**.
 
 **[2025.10.07]** — Thanks to [smthemex](https://github.com/smthemex) for developing [ComfyUI_LucidFlux](https://github.com/smthemex/ComfyUI_LucidFlux), which enables LucidFlux to run with **as little as 8 GB–12 GB of memory** through the ComfyUI integration. 
 
