@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Usage:
-python single_image_scores.py /path/to/image.jpg
-python single_image_scores.py /path/to/image.jpg --clipiqa-device cpu
-python single_image_scores.py /path/to/image.jpg --output /path/to/result.json
+python filtering_pipeline.py /path/to/image.jpg
+python filtering_pipeline.py /path/to/image.jpg --clipiqa-device cpu
+python filtering_pipeline.py /path/to/image.jpg --output /path/to/result.json
 """
 
 import argparse
