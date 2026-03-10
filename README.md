@@ -205,8 +205,7 @@ You can also obtain results of LucidFlux on RealSR and RealLQ250 from Hugging Fa
 
 ### Data and Filtering Pipeline
 
-We have released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz), and the filtering pipeline in ```tools/filtering_pipeline.py```. Images
-can be downloaded from the provided `image_url` field with:
+We have released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz), and the filtering pipeline in ```tools/filtering_pipeline.py```. Images can be downloaded from the provided `image_url`, and filtering scores can be computed with:
 
 ```bash
 # download the image
@@ -216,10 +215,7 @@ python tools/download_from_image_url.py "image_url in metadata"
 python tools/filtering_pipeline.py /path/to/image.jpg
 ```
 
-The LSDIR dataset can be downloaded from [LSDIR](https://huggingface.co/ofsoundof/LSDIR), and degr
-adation synthesis follows the pipeline from [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN). If more d
-ata is needed, please also refer to our [MultiAspect-4K-1M](https://github.com/W2GenAI-Lab/UltraFlux) datase
-t.
+The LSDIR dataset can be downloaded from [LSDIR](https://huggingface.co/ofsoundof/LSDIR), and degradation synthesis follows the pipeline from [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN). If more data is needed, please also refer to our [MultiAspect-4K-1M](https://github.com/W2GenAI-Lab/UltraFlux) dataset.
 
 ---
 
