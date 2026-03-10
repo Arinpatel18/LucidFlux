@@ -1,11 +1,7 @@
 <div align="center">
 <h1>🎨 LucidFlux:<br/>Caption-Free Photo-Realistic Image Restoration via a Large-Scale Diffusion Transformer</h1>
 
-<!-- <img src="images/logo/logo2.png" alt="LucidFlux Logo" width="1200"/> -->
-
 ### [**🌐 Website**](https://w2genai-lab.github.io/LucidFlux/) | [**📘 Arxiv**](http://arxiv.org/abs/2509.22414) | [**📄 Technical Report**](Technical_Report.pdf) | [**🤗 Models**](https://huggingface.co/W2GenAI/LucidFlux) | [**🔧 Fal-AI Demo&API**](https://fal.ai/models/fal-ai/lucidflux/playground) 
-<!-- | [**🤗 HF Demo**](https://github.com/W2GenAI-Lab/LucidFlux) -->
-<!-- [**🎯 Demo**](https://github.com/W2GenAI-Lab/LucidFlux)  -->
 </div>
 
 ---
@@ -13,6 +9,8 @@
 
 ---
 ## 📰 News & Updates  
+
+**[2025.03.10]** - We released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz) and the filtering pipeline in ```tools/filtering_pipeline.py```.
 
 **[2025.02.06]** - LucidFlux is accepted by **ICLR'26**.
 
@@ -40,69 +38,7 @@ Let us know if this works!
 
 ## 🌟 What is LucidFlux?
 
-<!-- <div align="center">
-<img src="images/demo/demo2.png" alt="What is LucidFlux - Quick Prompt Demo" width="1200"/>
-<br>
-</div> -->
-
 LucidFlux is a caption-free universal image restoration framework that leverages a lightweight dual-branch conditioner and adaptive modulation to guide a large diffusion transformer (Flux.1) with minimal overhead, achieving robust, high-fidelity restoration without relying on text prompts or MLLM captions.
-
-<!-- ## 🚀 Quick Start
-
-### 🔧 Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/ephemeral182/LucidFlux.git
-cd LucidFlux
-
-# Create conda environment
-conda create -n postercraft python=3.11
-conda activate postercraft
-
-# Install dependencies
-pip install -r requirements.txt
-
-``` -->
-
-<!-- ### 🚀 Quick Generation
-
-Generate high-quality aesthetic posters from your prompt with `BF16` precision:
-
-```bash
-python inference.py \
-  --prompt "Urban Canvas Street Art Expo poster with bold graffiti-style lettering and dynamic colorful splashes" \
-  --enable_recap \
-  --num_inference_steps 28 \
-  --guidance_scale 3.5 \
-  --seed 42 \
-  --pipeline_path "black-forest-labs/FLUX.1-dev" \
-  --custom_transformer_path "LucidFlux/LucidFlux-v1_RL" \
-  --qwen_model_path "Qwen/Qwen3-8B"
-```
-
-If you are running on a GPU with limited memory, you can use `inference_offload.py` to offload some components to the CPU:
-
-```bash
-python inference_offload.py \
-  --prompt "Urban Canvas Street Art Expo poster with bold graffiti-style lettering and dynamic colorful splashes" \
-  --enable_recap \
-  --num_inference_steps 28 \
-  --guidance_scale 3.5 \
-  --seed 42 \
-  --pipeline_path "black-forest-labs/FLUX.1-dev" \
-  --custom_transformer_path "LucidFlux/LucidFlux-v1_RL" \
-  --qwen_model_path "Qwen/Qwen3-8B"
-``` -->
-<!-- 
-### 💻 Gradio Web UI
-
-We provide a Gradio web UI for LucidFlux. 
-
-```bash
-python demo_gradio.py
-``` -->
-
 
 ## 📊 Performance Benchmarks
 
@@ -112,171 +48,6 @@ python demo_gradio.py
 
 <img alt="quantitative_comparison" src="images/framework/quantitative_comparison.png" />
 <img alt="quantitative_comparison_commercial" src="images/framework/quantitative_comparison_commercial.png" />
-
-
-<!-- <table> -->
-<!-- <thead>
-  <tr>
-    <th>Benchmark</th>
-    <th>Metric</th>
-    <th>ResShift</th>
-    <th>StableSR</th>
-    <th>SinSR</th>
-    <th>SeeSR</th>
-    <th>DreamClear</th>
-    <th>SUPIR</th>
-    <th>LucidFlux<br/>(Ours)</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td rowspan="7" style="text-align:center; vertical-align:middle;">RealSR</td>
-    <td style="white-space: nowrap;">CLIP-IQA+ ↑</td>
-    <td>0.5005</td>
-    <td>0.4408</td>
-    <td>0.5416</td>
-    <td>0.6731</td>
-    <td>0.5331</td>
-    <td>0.5640</td>
-    <td><b>0.7074</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">Q-Align ↑</td>
-    <td>3.1045</td>
-    <td>2.5087</td>
-    <td>3.3615</td>
-    <td>3.6073</td>
-    <td>3.0044</td>
-    <td>3.4682</td>
-    <td><b>3.7555</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">MUSIQ ↑</td>
-    <td>49.50</td>
-    <td>39.98</td>
-    <td>57.95</td>
-    <td>67.57</td>
-    <td>49.48</td>
-    <td>55.68</td>
-    <td><b>70.20</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">MANIQA ↑</td>
-    <td>0.2976</td>
-    <td>0.2356</td>
-    <td>0.3753</td>
-    <td>0.5087</td>
-    <td>0.3092</td>
-    <td>0.3426</td>
-    <td><b>0.5437</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">NIMA ↑</td>
-    <td>4.7026</td>
-    <td>4.3639</td>
-    <td>4.8282</td>
-    <td>4.8957</td>
-    <td>4.4948</td>
-    <td>4.6401</td>
-    <td><b>5.1072</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">CLIP-IQA ↑</td>
-    <td>0.5283</td>
-    <td>0.3521</td>
-    <td>0.6601</td>
-    <td><b>0.6993</b></td>
-    <td>0.5390</td>
-    <td>0.4857</td>
-    <td>0.6783</td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">NIQE ↓</td>
-    <td>9.0674</td>
-    <td>6.8733</td>
-    <td>6.4682</td>
-    <td>5.4594</td>
-    <td>5.2873</td>
-    <td>5.2819</td>
-    <td><b>4.2893</b></td>
-  </tr>
-  <tr>
-    <td rowspan="7" style="text-align:center; vertical-align:middle;">RealLQ250</td>
-    <td style="white-space: nowrap;">CLIP-IQA+ ↑</td>
-    <td>0.5529</td>
-    <td>0.5804</td>
-    <td>0.6054</td>
-    <td>0.7034</td>
-    <td>0.6810</td>
-    <td>0.6532</td>
-    <td><b>0.7406</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">Q-Align ↑</td>
-    <td>3.6318</td>
-    <td>3.5586</td>
-    <td>3.7451</td>
-    <td>4.1423</td>
-    <td>4.0640</td>
-    <td>4.1347</td>
-    <td><b>4.3935</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">MUSIQ ↑</td>
-    <td>59.50</td>
-    <td>57.25</td>
-    <td>65.45</td>
-    <td>70.38</td>
-    <td>67.08</td>
-    <td>65.81</td>
-    <td><b>73.01</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">MANIQA ↑</td>
-    <td>0.3397</td>
-    <td>0.2937</td>
-    <td>0.4230</td>
-    <td>0.4895</td>
-    <td>0.4400</td>
-    <td>0.3826</td>
-    <td><b>0.5589</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">NIMA ↑</td>
-    <td>5.0624</td>
-    <td>5.0538</td>
-    <td>5.2397</td>
-    <td>5.3146</td>
-    <td>5.2200</td>
-    <td>5.0806</td>
-    <td><b>5.4836</b></td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">CLIP-IQA ↑</td>
-    <td>0.6129</td>
-    <td>0.5160</td>
-    <td><b>0.7166</b></td>
-    <td>0.7063</td>
-    <td>0.6950</td>
-    <td>0.5767</td>
-    <td>0.7122</td>
-  </tr>
-  <tr>
-    <td style="white-space: nowrap;">NIQE ↓</td>
-    <td>6.6326</td>
-    <td>4.6236</td>
-    <td>5.4425</td>
-    <td>4.4383</td>
-    <td>3.8700</td>
-    <td><b>3.6591</b></td>
-    <td>3.6742</td>
-  </tr>
-</tbody>
-</table> -->
-
-
-
-<!-- <img src="images/user_study/hpc.png" alt="User Study Results" width="1200"/> -->
 
 </div>
 
@@ -432,6 +203,24 @@ bash inference.sh
 
 You can also obtain results of LucidFlux on RealSR and RealLQ250 from Hugging Face: [**LucidFlux**](https://huggingface.co/W2GenAI/LucidFlux).
 
+### Data and Filtering Pipeline
+
+We have released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz), and the filtering pipeline in ```tools/filtering_pipeline.py```. Images
+can be downloaded from the provided `image_url` field with:
+
+```bash
+# download the image
+python tools/download_from_image_url.py "image_url in metadata"
+
+# compute filtering scores
+python tools/filtering_pipeline.py /path/to/image.jpg
+```
+
+The LSDIR dataset can be downloaded from [LSDIR](https://huggingface.co/ofsoundof/LSDIR), and degr
+adation synthesis follows the pipeline from [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN). If more d
+ata is needed, please also refer to our [MultiAspect-4K-1M](https://github.com/W2GenAI-Lab/UltraFlux) datase
+t.
+
 ---
 
 ## 🚀 Updates
@@ -441,7 +230,7 @@ For the purpose of fostering research and the open-source community, we plan to 
 - [x] Release model checkpoints.
 - [x] Release arXiv paper.
 - [ ] Release training code.
-- [ ] Release the data filtering pipeline.
+- [x] Release the training data and filtering pipeline.
 
 
 
