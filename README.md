@@ -10,7 +10,7 @@
 ---
 ## 📰 News & Updates  
 
-**[2025.03.15]** - LucidFlux now integrates [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux)'s VAE to enable **2K image restoration**! 🚀
+**[2025.03.13]** - LucidFlux now integrates [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux)'s VAE to enable **2K image restoration**! 🚀
 
 **[2025.03.10]** - We released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz) and the filtering pipeline in ```tools/filtering_pipeline.py```.
 
