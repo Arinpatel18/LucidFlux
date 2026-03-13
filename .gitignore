@@ -22,6 +22,7 @@ demo.sh
 inference_fp8.sh
 inference_fp8.py
 down_single.sh
+run_codex.sh
 
 # Python cache files
 __pycache__/

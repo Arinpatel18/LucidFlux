@@ -5,17 +5,22 @@ import numpy as np
 from PIL import Image
 from einops import rearrange, repeat
 
-from src.flux.sampling import denoise_lucidflux, get_noise, get_schedule, unpack
-from src.flux.util import load_ae, load_flow_model, load_single_condition_branch, load_safetensors
+# from src.flux.sampling import denoise_lucidflux, get_noise, get_schedule, prepare, unpack
+from src.flux.sampling import denoise_lucidflux, get_schedule
+from src.flux.util import (load_ae, load_clip, load_t5,
+                           load_flow_model, load_single_condition_branch, load_safetensors)
 from src.flux.swinir import SwinIR
 import torch.nn as nn
 from src.flux.align_color import wavelet_reconstruction
+import torch.nn.functional as F
 
-from transformers import SiglipVisionModel
+from transformers import SiglipVisionModel, AutoProcessor
 from diffusers.pipelines.flux.modeling_flux import ReduxImageEncoder
 from src.flux.flux_prior_redux_ir import siglip_from_unit_tensor
 from typing import Optional
+from torch import Tensor
 import math
+
 
 def _expand_batch(tensor: torch.Tensor, batch_size: int, name: str) -> torch.Tensor:
     if tensor.shape[0] == batch_size:
@@ -29,6 +34,46 @@ def move_modules_to_device(device: torch.device | str, *modules: nn.Module) -> N
     for module in modules:
         module.to(device)
 
+
+# def get_schedule(
+#     num_steps: int,
+#     sigmas: float = 1.0,
+#     shift: float = 4.0,
+# ) -> list[float]:
+#     # extra step for zero
+#     timesteps = torch.linspace(1, 0, num_steps + 1)
+    
+#     timesteps = shift * timesteps / (1 + (shift - 1) * timesteps)
+#     return timesteps.tolist()
+
+def unpack(x: Tensor, height: int, width: int) -> Tensor:
+    return rearrange(
+        x,
+        "b (h w) (c ph pw) -> b c (h ph) (w pw)",
+        h=math.ceil(height / 32),
+        w=math.ceil(width / 32),
+        ph=2,
+        pw=2,
+    )
+
+def get_noise(
+    num_samples: int,
+    height: int,
+    width: int,
+    device: torch.device,
+    dtype: torch.dtype,
+    seed: int,
+):
+    return torch.randn(
+        num_samples,
+        16,
+        # allow for packing
+        2 * math.ceil(height / 32),
+        2 * math.ceil(width / 32),
+        device=device,
+        dtype=dtype,
+        generator=torch.Generator(device=device).manual_seed(seed),
+    )
 
 def prepare_with_embeddings(img, precomputed_txt, precomputed_vec):
     """
@@ -368,12 +413,13 @@ def main(args):
     print(f"txt shape: {precomputed_txt.shape}, vec shape: {precomputed_vec.shape}")
 
     # base models
-    model, ae, condition_lq = (
-        load_flow_model(name, device=torch_device),
-        load_ae(name, device="cpu" if offload else torch_device),
+    model, condition_lq = (
+        load_flow_model(name, device=torch_device).to(torch.bfloat16),
         load_single_condition_branch(name, "cpu" if offload else torch_device).to(torch.bfloat16),
     )
 
+    from src.ultraflux.autoencoder_kl import AutoencoderKL
+    ae = AutoencoderKL.from_pretrained("./weights/ultraflux", subfolder="vae", torch_dtype=torch.bfloat16)
 
     # load model checkpoint
     if '.safetensors' in args.checkpoint:
@@ -435,11 +481,12 @@ def main(args):
     siglip_model.to("cpu" if offload else torch_device).to(dtype=dtype)
     redux_image_encoder = load_redux_image_encoder("cpu" if offload else torch_device, dtype, checkpoint["connector"])
 
-    width = 16 * args.width // 16
-    height = 16 * args.height // 16
+    width = 32 * args.width // 32
+    height = 32 * args.height // 32
+    # timesteps = get_schedule(args.num_steps, shift=4.0)
     timesteps = get_schedule(
         args.num_steps,
-        (width // 8) * (height // 8) // (16 * 16),
+        (width // 8) * (height // 8) // (32 * 32),
         shift=(not is_schnell),
     )
 
@@ -466,7 +513,7 @@ def main(args):
         filename = os.path.basename(img_path).split(".")[0]
         
         # For each image, compute processed resolution and persist preview
-        lq_processed = preprocess_lq_image(img_path, args.width, args.height)
+        lq_processed = preprocess_lq_image(img_path, args.width // 2, args.height // 2)
         # lq_processed.save(os.path.join(args.output_dir, f"{filename}_lq_processed.jpeg"))
         condition_cond = torch.from_numpy((np.array(lq_processed) / 127.5) - 1)
         condition_cond = condition_cond.permute(2, 0, 1).unsqueeze(0).to(torch.bfloat16).to(torch_device)
@@ -549,7 +596,10 @@ def main(args):
                 ae.decoder.to(x.device)
 
             x = unpack(x.float(), height, width)
-            x = ae.decode(x)
+            dec_dtype = ae.decoder.conv_in.weight.dtype
+            x = (x / ae.scaling_factor + ae.shift_factor).to(dec_dtype)
+            out = ae.decode(x)
+            x = out.sample if hasattr(out, "sample") else out
             if args.offload:
                 ae.decoder.cpu()
                 torch.cuda.empty_cache()
@@ -558,6 +608,7 @@ def main(args):
         x1 = rearrange(x1[-1], "c h w -> h w c")
         output_img = Image.fromarray((127.5 * (x1 + 1.0)).cpu().byte().numpy())
 
+        ci_pre = F.interpolate(ci_pre, scale_factor=2, mode='bilinear', align_corners=False)
         hq = wavelet_reconstruction((x1.permute(2, 0, 1) + 1.0) / 2, ci_pre.squeeze(0))
         hq = hq.clamp(0, 1)
         save_image(hq, os.path.join(args.output_dir, f"{filename}.png"))
