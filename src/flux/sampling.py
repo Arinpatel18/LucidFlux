@@ -107,7 +107,7 @@ def denoise_lucidflux(
     timesteps: list[float],
     guidance: float = 4.0,
     condition_cond_lq=None,
-    condition_cond_ldr=None,
+    condition_cond_pre=None,
 ):
     # this is ignored for schnell
     guidance_vec = torch.full((img.shape[0],), guidance, device=img.device, dtype=img.dtype)
@@ -120,14 +120,14 @@ def denoise_lucidflux(
         txt_ids_in = txt_ids.to(dtype)
         vec_in = vec.to(dtype)
         cond_lq = condition_cond_lq.to(dtype)
-        cond_ldr = condition_cond_ldr.to(dtype)
+        cond_pre = condition_cond_pre.to(dtype)
 
 
         block_res_samples = dual_condition_model(
             img=img,
             img_ids=img_ids_in,
             condition_cond_lq=cond_lq,
-            condition_cond_ldr=cond_ldr,
+            condition_cond_pre=cond_pre,
             txt=txt_in,
             txt_ids=txt_ids_in,
             y=vec_in,

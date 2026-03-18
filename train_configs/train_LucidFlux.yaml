@@ -1,0 +1,41 @@
+model_name: flux-dev
+
+# Paired dataset folder: data_root/{lq,gt}
+data_config:
+  data_root: assets/training_data
+  img_size: 1024
+  train_batch_size: 1
+  num_workers: 4
+
+lucidflux_weights_path: weights/lucidflux/lucidflux.pth
+prompt_embeddings_path: weights/lucidflux/prompt_embeddings.pt
+siglip_ckpt: weights/siglip
+swinir_pretrained: weights/swinir.pth
+
+output_dir: lucidflux_checkpoint
+logging_dir: logs
+report_to: wandb
+tracker_project_name: lucidflux_training
+resume_from_checkpoint: latest
+
+max_train_steps: 100000
+checkpointing_steps: 500
+checkpoints_total_limit: 10
+gradient_accumulation_steps: 1
+
+learning_rate: 2e-5
+lr_scheduler: constant_with_warmup
+lr_warmup_steps: 500
+optimizer_type: adafactor
+relative_step: false
+scale_parameter: false
+warmup_init: false
+max_grad_norm: 0.0
+mixed_precision: bf16
+loss_type: l2
+
+timestep_sampling: shift
+discrete_flow_shift: 3.1582
+guidance_scale: 1.0
+
+seed: 42

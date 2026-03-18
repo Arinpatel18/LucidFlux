@@ -10,6 +10,8 @@
 ---
 ## 📰 News & Updates  
 
+**[2026.03.19]** - We released the training code for LucidFlux.
+
 **[2025.03.13]** - LucidFlux now integrates [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux)'s VAE to enable **2K image restoration**! 🚀
 
 **[2025.03.10]** - We released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz) and the filtering pipeline in ```tools/filtering_pipeline.py```.
@@ -221,13 +223,21 @@ The LSDIR dataset can be downloaded from [LSDIR](https://huggingface.co/ofsoundo
 
 ---
 
+### Train
+
+The training config is provided in `train_configs/train_LucidFlux.yaml`. The training data can be prepared in the same structure as the example under `assets/training_data`, where each sample is organized as paired images in `assets/training_data/lq` and `assets/training_data/gt`. In our current setup, the training run takes roughly 50 GB VRAM with `bs=2`, and about 43 GB with `bs=1`. Once the data is ready, you can start training with:
+
+```bash
+bash train.sh
+```
+
 ## 🚀 Updates
 For the purpose of fostering research and the open-source community, we plan to open-source the entire project, encompassing training, inference, weights, etc. Thank you for your patience and support! 🌟
 - [x] Release github repo.
 - [x] Release inference code.
 - [x] Release model checkpoints.
 - [x] Release arXiv paper.
-- [ ] Release training code.
+- [x] Release training code.
 - [x] Release the training data and filtering pipeline.
 
 

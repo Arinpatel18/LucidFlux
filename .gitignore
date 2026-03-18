@@ -16,6 +16,7 @@ cat_image.py
 run_cc.sh
 CLAUDE.md
 outputs/
+outputs-2k/
 hfd.sh
 demo.py
 demo.sh
@@ -23,6 +24,9 @@ inference_fp8.sh
 inference_fp8.py
 down_single.sh
 run_codex.sh
+train_logs
+lucidflux_checkpoint
+evaluation
 
 # Python cache files
 __pycache__/
