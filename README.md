@@ -8,15 +8,29 @@
 <img alt="abs_image" src="images/framework/abs_image.png" />
 
 ---
+
+<details open><summary>💡 We also have other projects on 4K text-to-image generation and RL-enhanced LucidFlux that may interest you</summary><p>
+
+> [**[CVPR 2026] UltraFlux: Data-Model Co-Design for High-quality Native 4K Text-to-Image Generation across Diverse Aspect Ratios**](https://arxiv.org/pdf/2509.22414) <br>
+> [**Tian Ye**](https://owen718.github.io/)<sup>1</sup>\*‡, [**Song Fei**](https://feisong123.github.io)<sup>1</sup>\*, [**Lei Zhu**](https://sites.google.com/site/indexlzhu/home)<sup>1,2</sup>† <br>
+> [![github](https://img.shields.io/badge/-Github-black?logo=github)](https://github.com/W2GenAI-Lab/UltraFlux) [![github](https://img.shields.io/github/stars/W2GenAI-Lab/UltraFlux.svg?style=social)](https://github.com/W2GenAI-Lab/UltraFlux) [![arXiv](https://img.shields.io/badge/arXiv-2509.22414-red)](https://arxiv.org/pdf/2509.22414) [![Project Page](https://img.shields.io/badge/Project%20Page-Visit-blue)](https://w2genai-lab.github.io/UltraFlux/) [![Hugging Face Space](https://img.shields.io/badge/🤗-HuggingFace-yellow)](https://huggingface.co/Owen777/UltraFlux-v1) <br>
+
+> [**LucidNFT: LR-Anchored Multi-Reward Preference Optimization for Generative Real-World Super-Resolution**](https://arxiv.org/pdf/2603.05947) <br>
+> [**Song Fei**](https://feisong123.github.io)<sup>1,†</sup>, [**Tian Ye**](https://owen718.github.io)<sup>1,†</sup>, [**Sixiang Chen**](https://ephemeral182.github.io)<sup>1</sup>, [**Zhaohu Xing**](https://ge-xing.github.io)<sup>1</sup>, [**Jianyu Lai**](https://alexlai2860.github.io/)<sup>1</sup>, [**Lei Zhu**](https://sites.google.com/site/indexlzhu/home)<sup>1,2,*</sup> <br>
+> [![github](https://img.shields.io/badge/-Github-black?logo=github)](https://github.com/W2GenAI-Lab/LucidNFT) [![github](https://img.shields.io/github/stars/W2GenAI-Lab/LucidNFT.svg?style=social)](https://github.com/W2GenAI-Lab/LucidNFT) [![arXiv](https://img.shields.io/badge/arXiv-2603.05947-red)](https://arxiv.org/pdf/2603.05947) [![Project Page](https://img.shields.io/badge/Project%20Page-Visit-blue)](https://w2genai-lab.github.io/LucidNFT/) [![Hugging Face Space](https://img.shields.io/badge/🤗-HuggingFace-yellow)](https://huggingface.co/W2GenAI/LucidNFT) <br>
+
+</p></details>
+
+---
 ## 📰 News & Updates  
 
 **[2026.03.19]** - We released the training code for LucidFlux.
 
-**[2025.03.13]** - LucidFlux now integrates [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux)'s VAE to enable **2K image restoration**! 🚀
+**[2026.03.13]** - LucidFlux now integrates [UltraFlux](https://github.com/W2GenAI-Lab/UltraFlux)'s VAE to enable **2K image restoration**! 🚀
 
-**[2025.03.10]** - We released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz) and the filtering pipeline in ```tools/filtering_pipeline.py```.
+**[2026.03.10]** - We released the metadata for the clean images used in LucidFlux at [LucidFlux-Training-Data](https://huggingface.co/W2GenAI/LucidFlux/blob/main/LucidFlux-Training-Data.tar.gz) and the filtering pipeline in ```tools/filtering_pipeline.py```.
 
-**[2025.02.06]** - LucidFlux is accepted by **ICLR'26**.
+**[2026.02.06]** - LucidFlux is accepted by **ICLR'26**.
 
 **[2025.10.07]** — Thanks to [smthemex](https://github.com/smthemex) for developing [ComfyUI_LucidFlux](https://github.com/smthemex/ComfyUI_LucidFlux), which enables LucidFlux to run with **as little as 8 GB–12 GB of memory** through the ComfyUI integration. 
 
