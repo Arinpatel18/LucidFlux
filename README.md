@@ -9,7 +9,7 @@
 
 ---
 
-<details open><summary>💡 We also have other projects on 4K text-to-image generation and RL-enhanced LucidFlux that may interest you</summary><p>
+<details open><summary>💡 We also have other projects on 4K text-to-image generation and RL-enhanced LucidFlux that may interest you. ✨</summary><p>
 
 > [**[CVPR 2026] UltraFlux: Data-Model Co-Design for High-quality Native 4K Text-to-Image Generation across Diverse Aspect Ratios**](https://arxiv.org/pdf/2509.22414) <br>
 > [**Tian Ye**](https://owen718.github.io/)<sup>1</sup>\*‡, [**Song Fei**](https://feisong123.github.io)<sup>1</sup>\*, [**Lei Zhu**](https://sites.google.com/site/indexlzhu/home)<sup>1,2</sup>† <br>
