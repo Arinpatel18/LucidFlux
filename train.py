@@ -139,18 +139,24 @@ def get_models(name: str, device: torch.device, offload: bool):
 
 def create_optimizer(args, parameters):
     optimizer_type = args.get("optimizer_type", "adafactor").lower()
-    if optimizer_type != "adafactor":
-        raise ValueError(f"Unsupported optimizer_type {optimizer_type!r}. Expected 'adafactor'.")
-
-    from transformers import Adafactor
-
-    return Adafactor(
-        parameters,
-        lr=args.learning_rate,
-        relative_step=args.get("relative_step", False),
-        scale_parameter=args.get("scale_parameter", False),
-        warmup_init=args.get("warmup_init", False),
-    )
+    if optimizer_type == "adafactor":
+        from transformers import Adafactor
+        return Adafactor(
+            parameters,
+            lr=args.learning_rate,
+            relative_step=args.get("relative_step", False),
+            scale_parameter=args.get("scale_parameter", False),
+            warmup_init=args.get("warmup_init", False),
+        )
+    elif optimizer_type == "adamw":
+        from torch.optim import AdamW
+        return AdamW(
+            parameters,
+            lr=args.learning_rate,
+            weight_decay=args.get("weight_decay", 1e-4),
+        )
+    else:
+        raise ValueError(f"Unsupported optimizer_type {optimizer_type!r}. Expected 'adafactor' or 'adamw'.")
 
 
 def cleanup_old_checkpoints(output_dir: str, checkpoints_total_limit: int | None):
@@ -182,8 +188,8 @@ def resolve_resume_checkpoint(output_dir: str, resume_from_checkpoint: str | Non
 
 def validate_effective_training_config(args) -> None:
     optimizer_type = args.get("optimizer_type", "adafactor").lower()
-    if optimizer_type != "adafactor":
-        raise ValueError(f"optimizer_type must be 'adafactor', got {optimizer_type!r}")
+    if optimizer_type not in ["adafactor", "adamw"]:
+        raise ValueError(f"optimizer_type must be 'adafactor' or 'adamw', got {optimizer_type!r}")
 
     timestep_sampling = args.get("timestep_sampling", "shift")
     if timestep_sampling != "shift":

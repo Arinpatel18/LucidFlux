@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-source weights/env.sh
+# source weights/env.sh
+export FLUX_DEV_FLOW=/scratch/data/avinash1/LucidFlux/weights/flux-dev/flux1-dev.safetensors
+export FLUX_DEV_AE=/scratch/data/avinash1/LucidFlux/weights/flux-dev/ae.safetensors
+export HF_HOME=/scratch/data/avinash1/huggingface1₹
 
 log_dir="train_logs"
 timestamp="$(date +%Y%m%d%H%M)"

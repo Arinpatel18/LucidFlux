@@ -51,3 +51,19 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+# -----------------
+# Added to ignore heavy model files and cluster outputs
+# -----------------
+*.pth
+*.pt
+*.safetensors
+*.bin
+infer_*.out
+infer_*.err
+train_*.out
+train_*.err
+outputs-trained/
+evaluation_trained/
+logs/
+data/
+assets/training_data/
